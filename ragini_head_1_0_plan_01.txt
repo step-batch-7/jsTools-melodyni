@@ -1,0 +1,170 @@
+1. head filename 
+2. head -n 8 filename
+3. cat filename | head 
+4. head file1 file2 file3 
+5. echo "Something" | head
+6. head -c 8 filename
+
+
+****** planning for 1st flow.
+
+EXPECTATIONS ==>>>
+[1.] head 10 lines of file if exists........
+INPUT => node head.js filename
+FILE CONTENT => 
+1.aa 
+2.bb
+3.cc
+4.dd
+5.ee
+6.ff
+7.gg
+8.hh
+9.ii
+10.jj
+11.kk
+12.ll
+13.mm
+14.nn
+
+OUTPUT => 
+1.aa
+2.bb 
+3.cc 
+4.dd
+5.ee 
+6.ff 
+7.gg 
+8.hh 
+9.ii 
+10.jj
+
+[2.] head all lines if files contains less than 10 lines........
+INPUT => node head.js filename 
+FILE CONTENT => 
+1.aa 
+2.bb
+3.cc
+4.dd
+5.ee
+OUTPUT => 
+1.aa
+2.bb 
+3.cc 
+4.dd
+5.ee 
+
+[3.] give error message if file doesn't exist......
+INPUT => node head.js bad.txt
+ERROR: "head: filename: No such file or directory"
+
+------------------------------------------------------
+HAPPYPATH ==>>>> 
+
+INPUT => node head.js filename
+FILE CONTENT => 
+1.aa 
+2.bb
+3.cc
+4.dd
+5.ee
+6.ff
+7.gg
+8.hh
+9.ii
+10.jj
+11.kk
+12.ll
+13.mm
+14.nn
+
+OUTPUT => 
+1.aa
+2.bb 
+3.cc 
+4.dd
+5.ee 
+6.ff 
+7.gg 
+8.hh 
+9.ii 
+10.jj
+
+**** transformation of Data ****
+[1] Displaying the result.
+output: 
+1.aa
+2.bb 
+3.cc 
+4.dd
+5.ee 
+6.ff 
+7.gg 
+8.hh 
+9.ii 
+10.jj
+input: formattedLines ==> "1.aa\n2.bb\n......\n9.ii\njj"
+___________________________________________________________________________
+
+[2] Convert this array back to strings.    
+output :formattedLines ==> "1.aa\n2.bb\n......\n9.ii\n10.jj"
+outputType: String
+
+input : initialNLines ==> ["1.aa","2.bb","3.cc",...."9.ii","10.jj"] 
+inputType: Array  
+
+functionName : ConvertToString 
+argument : initialNLines 
+argumentType: Array of 10 elements                         
+___________________________________________________________________________
+
+[3] Slicing 10 starting elements of the array 
+output: initialNLines ==> ["1.aa","2.bb","3.cc",...."9.ii","10.jj"]
+outputType : Array 
+
+input : splittedContentLines ==> ["1.aa","2.bb"...."13.mm","14.nn"]
+inputType: Array
+
+functionName : selectInitialNLines
+argument : splittedContentLines , headLength
+argumentType :  Array , (default : 10 , userCount : positive Integer)
+___________________________________________________________________________
+
+[4] Splitting by newLines.
+output :splittedContentLines ==> ["1.aa","2.bb"...."13.mm","14.nn"] 
+outputType: Array.
+
+input : fileContent ==>"1.aa\n2.bb\n3.cc\n........\n13.mm\n14.nn"
+inputType: String 
+
+functionName :SplitByNewLine 
+argument : contentOfFiles
+___________________________________________________________________________
+
+[5(a)] Reading contents of file if exists. 
+output:fileContent ==>"1.aa\n2.bb\n3.cc\n........\n13.mm\n14.nn" 
+outputType:String
+
+[5(b)] Reading contents of file if doesn't exist
+output:fileContent ==>"head: filename: No such file or directory"
+outputType: ERROR (String)
+
+input:fileName ==> "filename.txt"
+inputType:String
+
+functionName:ReadFile 
+argument:fileName
+___________________________________________________________________________
+
+[6] get fileName from process.argv  
+output: fileName ==> "filename"
+outputType: string   
+
+input: userArgs ==>["node","head.js","filename"] 
+inputType: ArrayOfString
+
+functionName :ParseArgs 
+argument : cmdLineArgs
+
+---------------------------------------------------------------------------
+
