@@ -6,10 +6,10 @@
 6. head -c 8 filename
 
 
-****** planning for 1st flow.
-
-EXPECTATIONS ==>>>
-[1.] head 10 lines of file if exists........
+[A] ******planning for 1st flow.
+____________________________________________________________________________________
+EXPECTATIONS ==>>>[1.] head 10 lines of file if exists........
+____________________________________________________________________________________
 INPUT => node head.js filename
 FILE CONTENT => 
 1.aa 
@@ -38,8 +38,9 @@ OUTPUT =>
 8.hh 
 9.ii 
 10.jj
-
-[2.] head all lines if files contains less than 10 lines........
+____________________________________________________________________________________
+EXPECTATIONS ==>>>[2.] head all lines if files contains less than 10 lines........
+____________________________________________________________________________________
 INPUT => node head.js filename 
 FILE CONTENT => 
 1.aa 
@@ -53,13 +54,48 @@ OUTPUT =>
 3.cc 
 4.dd
 5.ee 
-
-[3.] give error message if file doesn't exist......
+____________________________________________________________________________________
+EXPECTATIONS ==>>>[3.] give error message if file doesn't exist......
+____________________________________________________________________________________
 INPUT => node head.js bad.txt
 ERROR: "head: filename: No such file or directory"
 
+-------**********--------**********--------**********--------**********--------**********--------
+
+[B] *****planning for 2nd flow
+____________________________________________________________________________________
+EXPECTATIONS ==>>>[4.] give head of predefined length.........
+____________________________________________________________________________________
+INPUT => node head.js -n 5 filename.txt
+FILE CONTENT => 
+1.aa 
+2.bb
+3.cc
+4.dd
+5.ee
+6.ff 
+7.gg 
+8.hh 
+9.ii 
+10.jj
+OUTPUT => 
+1.aa
+2.bb 
+3.cc 
+4.dd
+5.ee 
+___________________________________________________________________________________
+EXPECTATIONS ==>>>[5.] give error for illegal count........ 
+____________________________________________________________________________________
+INPUT => node head.js -n -8 filename.txt 
+FILE CONTENT => 
+1.aa 
+2.bb
+3.cc
+4.dd
+5.ee
+ERROR: ""head: illegal line count -- -5""
 ------------------------------------------------------
-HAPPYPATH ==>>>> 
 
 INPUT => node head.js filename
 FILE CONTENT => 
@@ -91,7 +127,7 @@ OUTPUT =>
 10.jj
 
 **** transformation of Data ****
-[1] Displaying the result.
+[1A] Displaying the result.
 output: 
 1.aa
 2.bb 
@@ -104,9 +140,18 @@ output:
 9.ii 
 10.jj
 input: formattedLines ==> "1.aa\n2.bb\n......\n9.ii\njj"
+---------
+[1B]Displaying the result 
+output: 
+1.aa
+2.bb 
+3.cc 
+4.dd
+5.ee 
+input: formattedLines ==> "1.aa\n2.bb\n3.cc\n4.dd\n5.ee"
 ___________________________________________________________________________
 
-[2] Convert this array back to strings.    
+[2A] Convert this array back to strings.    
 output :formattedLines ==> "1.aa\n2.bb\n......\n9.ii\n10.jj"
 outputType: String
 
@@ -118,19 +163,35 @@ argument : initialNLines
 argumentType: Array of 10 elements                         
 ___________________________________________________________________________
 
-[3] Slicing 10 starting elements of the array 
+[3A] Slicing 10 starting elements of the array 
 output: initialNLines ==> ["1.aa","2.bb","3.cc",...."9.ii","10.jj"]
 outputType : Array 
 
 input : splittedContentLines ==> ["1.aa","2.bb"...."13.mm","14.nn"]
 inputType: Array
+--------
+
+[3B(a)] Slicing N starting elements of the array
+output: initialNLines ==> ["1.aa","2.bb","3.cc","4.dd","5.ee"]
+outputType : Array 
+
+input : splittedContentLines ==> ["1.aa","2.bb"...."13.mm","14.nn"],5
+inputType: Array
+---------
+
+[3B(b)] Slicing N starting elements of array where N is not a positive Integer
+output: "head: illegal line count -- -5"
+outputType : ERROR (string)
+
+input : splittedContentLines ==> ["1.aa","2.bb"...."13.mm","14.nn"],-5
+inputType: Array
 
 functionName : selectInitialNLines
 argument : splittedContentLines , headLength
-argumentType :  Array , (default : 10 , userCount : positive Integer)
+argumentType :  Array , Integer
 ___________________________________________________________________________
 
-[4] Splitting by newLines.
+[4A] Splitting by newLines.
 output :splittedContentLines ==> ["1.aa","2.bb"...."13.mm","14.nn"] 
 outputType: Array.
 
@@ -141,12 +202,12 @@ functionName :SplitByNewLine
 argument : contentOfFiles
 ___________________________________________________________________________
 
-[5(a)] Reading contents of file if exists. 
+[5A(a)] Reading contents of file if exists. 
 output:fileContent ==>"1.aa\n2.bb\n3.cc\n........\n13.mm\n14.nn" 
 outputType:String
 
-[5(b)] Reading contents of file if doesn't exist
-output:fileContent ==>"head: filename: No such file or directory"
+[5(Ab)] Reading contents of file if doesn't exist
+output:"head: filename: No such file or directory"
 outputType: ERROR (String)
 
 input:fileName ==> "filename.txt"
@@ -156,15 +217,21 @@ functionName:ReadFile
 argument:fileName
 ___________________________________________________________________________
 
-[6] get fileName from process.argv  
-output: fileName ==> "filename"
-outputType: string   
+[6A] get fileName from commandLineArgs 
+output: fileName ==> {filename:"filename",headLength:10}
+outputType: object   
 
 input: userArgs ==>["node","head.js","filename"] 
 inputType: ArrayOfString
 
-functionName :ParseArgs 
-argument : cmdLineArgs
+[6B]get filename and headLength from commandLineArgs
+output: fileName ==> {filename:"filename",headLength:5}
+outputType: object  
 
+input: userArgs ==>["node","head.js","-n","5","filename"] 
+inputType: ArrayOfString
+
+functionName :ParseArgs 
+argument : commandLineArgs
 ---------------------------------------------------------------------------
 
