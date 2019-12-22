@@ -8,5 +8,7 @@ const parseUserArgs = function(userArgs) {
   };
   return parsedArgs;
 };
-
-module.exports = { parseUserArgs };
+const selectLastN = function(allLines, tailLength) {
+  return allLines.slice(-tailLength);
+};
+module.exports = { parseUserArgs, selectLastN };
