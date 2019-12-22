@@ -1,22 +1,6 @@
 "use strict";
-const fs = require("fs");
 
-const getFileAction = function(path) {
-  return {
-    path,
-    code: "utf8",
-    reader: fs.readFileSync,
-    filePresent: fs.existsSync
-  };
-};
-
-const readFromFile = function(fileAction) {
-  return fileAction.reader(fileAction.path, fileAction.code);
-};
-
-const isFilePresent = function(fileAction) {
-  return fileAction.filePresent(fileAction.path);
-};
+const { getFileAction, isFilePresent, readFromFile } = require("./fileUtil");
 
 const parseUserArgs = function(userArgs) {
   const parsedArgs = {
@@ -40,11 +24,4 @@ const selectLastN = function(content, tailLength) {
   return chunks.slice(-tailLength);
 };
 
-module.exports = {
-  parseUserArgs,
-  selectLastN,
-  loadFile,
-  getFileAction,
-  readFromFile,
-  isFilePresent
-};
+module.exports = { parseUserArgs, selectLastN, loadFile };

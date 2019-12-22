@@ -10,21 +10,23 @@ Tasks:
   ✔ create  tailLib.js in src & testTailLib.js in test
   ✔ create gitignore
   ✔ file connections
-  * write appTests
+  ✔ write appTests
 
 Implementation:
-  * write test for parse user args
+ ✔ * write test for parse user args
   --> should parse the user ags in 3 fields
       filename
       option (default = "-n")
       tailLength (default = 10)
 
-  * write test for loadFile
+ ✔ * write test for loadFile
   --> should read content if file is present
   --> should give stderr if file is not present
   --> add mock testing for file
 
-  * write test for selectLastN
+ ✔ * write test for selectLastN
   --> should give an array of end N Lines
   
+ ✔ * extract file related function into fileUtil.js 
+  * write main
 
