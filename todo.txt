@@ -1,0 +1,29 @@
+
+v0.1
+
+Goal : node tail.js filename
+
+Tasks:
+  ✔ initialize npm package.json
+  ✔ create file tail.js 
+  ✔ create src & test
+  ✔ create  tailLib.js in src & testTailLib.js in test
+  ✔ create gitignore
+  ✔ file connections
+  * write appTests
+
+Implementation:
+  * write test for parse user args
+  --> should parse the user ags in 3 fields
+      filename
+      option (default = "-n")
+      tailLength (default = 10)
+
+  * write test for loadFile
+  --> should read content if file is present
+  --> should give stderr if file is not present
+  
+  * write test for selectLastN
+  --> should give an array of end N Lines
+  
+
