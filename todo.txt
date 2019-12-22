@@ -22,7 +22,8 @@ Implementation:
   * write test for loadFile
   --> should read content if file is present
   --> should give stderr if file is not present
-  
+  --> add mock testing for file
+
   * write test for selectLastN
   --> should give an array of end N Lines
   

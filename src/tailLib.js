@@ -1,4 +1,22 @@
 "use strict";
+const fs = require("fs");
+
+const getFileAction = function(path) {
+  return {
+    path,
+    code: "utf8",
+    reader: fs.readFileSync,
+    filePresent: fs.existsSync
+  };
+};
+
+const readFromFile = function(fileAction) {
+  return fileAction.reader(fileAction.path, fileAction.code);
+};
+
+const isFilePresent = function(fileAction) {
+  return fileAction.filePresent(fileAction.path);
+};
 
 const parseUserArgs = function(userArgs) {
   const parsedArgs = {
@@ -8,7 +26,25 @@ const parseUserArgs = function(userArgs) {
   };
   return parsedArgs;
 };
-const selectLastN = function(allLines, tailLength) {
-  return allLines.slice(-tailLength);
+
+const loadFile = function(path) {
+  const fileAction = getFileAction(path);
+  if (isFilePresent(fileAction)) {
+    return readFromFile(fileAction);
+  }
+  throw new Error(`tail: ${path}: No such file or directory`);
 };
-module.exports = { parseUserArgs, selectLastN };
+
+const selectLastN = function(content, tailLength) {
+  const chunks = content.split("\n");
+  return chunks.slice(-tailLength);
+};
+
+module.exports = {
+  parseUserArgs,
+  selectLastN,
+  loadFile,
+  getFileAction,
+  readFromFile,
+  isFilePresent
+};

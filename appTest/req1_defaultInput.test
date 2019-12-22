@@ -1,4 +1,4 @@
-node tail.js sampleTextForTail.txt 
+node tail.js sampleTextForTail.txt
 six
 seven
 eight
