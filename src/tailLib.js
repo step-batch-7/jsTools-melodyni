@@ -1,10 +1,5 @@
 "use strict";
 
-process.on("uncaughtException", err => {
-  process.stderr.write(err.message);
-  process.exit(1);
-});
-
 const { getFileAction, isFilePresent, readFromFile } = require("./fileUtil");
 
 const parseUserArgs = function(userArgs) {

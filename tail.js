@@ -1,4 +1,8 @@
 "use strict";
+process.on("uncaughtException", err => {
+  console.error(err.message);
+  process.exit(1);
+});
 
 const { parseUserArgs, selectLastN, loadFile } = require("./src/tailLib");
 
