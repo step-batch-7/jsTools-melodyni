@@ -17,7 +17,7 @@ describe("parseUserArgs", () => {
 describe("loadFile", () => {
   it("should load the contents of file in array if file exist", () => {
     const content =
-      "one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten\neleven\ntwelve\nthirteen\nfourteen\nfifteen\n";
+      "one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten\neleven\ntwelve\nthirteen\nfourteen\nfifteen";
     assert.strictEqual(loadFile("sampleTextForTail.txt"), content);
   });
   it("should throw an error if file doesn't exist", () => {

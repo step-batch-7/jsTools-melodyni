@@ -28,5 +28,9 @@ Implementation:
   --> should give an array of end N Lines
   
  ✔ * extract file related function into fileUtil.js 
-  * write main
+ ✔ * write main
+
+//version0.1 (written main tail.js)
+
+//* apptest for node tail.js filename(default Input) is working
 
