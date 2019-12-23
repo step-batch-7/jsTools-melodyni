@@ -48,6 +48,7 @@ Implementation:
  ✔ * should give option & tailLength back if it is valid
  ✔ * should give default option back if option is not specified
  ✔ * should throw error if option is wrong
+ ✔ * should throw error if count is not an integer
 
   --> sendErrorMsg
-  * should send error message on error stream
+ ✔ * should send error message on error stream

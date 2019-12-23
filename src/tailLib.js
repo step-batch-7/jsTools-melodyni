@@ -2,6 +2,7 @@
 
 const { isFilePresent, readFromFile } = require("./fileUtil");
 const { parseOption } = require("./parsingUtil");
+const { sendErrorMsg } = require("./errorHandling");
 
 const parseUserArgs = function(userArgs) {
   const optionField = parseOption(userArgs);
@@ -17,7 +18,7 @@ const loadFile = function(fileAction) {
   if (isFilePresent(fileAction)) {
     return readFromFile(fileAction);
   }
-  throw new Error(`tail: ${fileAction.path}: No such file or directory`);
+  sendErrorMsg(`tail: ${fileAction.path}: No such file or directory`);
 };
 
 const selectLastN = function(content, tailLength) {

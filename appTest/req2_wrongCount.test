@@ -1,0 +1,2 @@
+(echo "one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten\neleven\ntwelve\nthirteen\nfourteen\nfifteen" > foo; node tail.js -n 7.7 foo; rm foo) 
+tail: illegal offset -- 7.7

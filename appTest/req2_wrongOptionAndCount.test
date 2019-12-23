@@ -1,0 +1,2 @@
+(echo "one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten\neleven\ntwelve\nthirteen\nfourteen\nfifteen" > foo; node tail.js -g 2.5 foo; rm foo) 
+tail: illegal option -- -g
