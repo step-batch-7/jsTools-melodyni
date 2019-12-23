@@ -11,12 +11,11 @@ const parseUserArgs = function(userArgs) {
   return parsedArgs;
 };
 
-const loadFile = function(path) {
-  const fileAction = getFileAction(path);
+const loadFile = function(fileAction) {
   if (isFilePresent(fileAction)) {
     return readFromFile(fileAction);
   }
-  throw new Error(`tail: ${path}: No such file or directory`);
+  throw new Error(`tail: ${fileAction.path}: No such file or directory`);
 };
 
 const selectLastN = function(content, tailLength) {

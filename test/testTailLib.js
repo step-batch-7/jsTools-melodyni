@@ -16,12 +16,41 @@ describe("parseUserArgs", () => {
 
 describe("loadFile", () => {
   it("should load the contents of file in array if file exist", () => {
-    const content =
-      "one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten\neleven\ntwelve\nthirteen\nfourteen\nfifteen";
-    assert.strictEqual(loadFile("sampleTextForTail.txt"), content);
+    const readFile = function(path, code) {
+      assert.strictEqual(path, "path");
+      assert.strictEqual(code, "utf8");
+      return "one\ntwo\nthree\nfour\nfive";
+    };
+    const existFile = function(path) {
+      assert.strictEqual(path, "path");
+      return true;
+    };
+    const fileAction = {
+      path: "path",
+      code: "utf8",
+      reader: readFile,
+      filePresent: existFile
+    };
+    assert.strictEqual(loadFile(fileAction), "one\ntwo\nthree\nfour\nfive");
   });
+
   it("should throw an error if file doesn't exist", () => {
-    assert.throws(() => loadFile("badFile.txt"), Error);
+    const readFile = function(path, code) {
+      assert.strictEqual(path, "path");
+      assert.strictEqual(code, "utf8");
+      return "one\ntwo\nthree\nfour\nfive";
+    };
+    const existFile = function(path) {
+      assert.strictEqual(path, "path");
+      return false;
+    };
+    const fileAction = {
+      path: "path",
+      code: "utf8",
+      reader: readFile,
+      filePresent: existFile
+    };
+    assert.throws(() => loadFile(fileAction), Error);
   });
 });
 

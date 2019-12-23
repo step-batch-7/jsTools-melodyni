@@ -30,3 +30,16 @@ Implementation:
  ✔ * extract file related function into fileUtil.js 
  ✔ * write main
  ✔ * working appTests
+
+v0.2
+
+Goal : node tail.js -n 5 filename
+
+Implementation: 
+  * write appTests for this command
+
+  --> parseUserArgs function 
+  * add test for parseUserArgs that can update tailLength
+  * modify parseUserArgs function
+  
+  --> 

@@ -1,11 +1,4 @@
-one
-two
-three
-four
-five
-six
-seven
-eight
+node tail.js -n 7 sampleTextForTail.txt
 nine
 ten
 eleven

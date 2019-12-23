@@ -1,5 +1,4 @@
-node tail.js sampleTextForTail.txt
-six
+(echo "one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten\neleven\ntwelve\nthirteen\nfourteen\nfifteen" > foo; node tail.js foo; rm foo)
 seven
 eight
 nine
@@ -9,3 +8,4 @@ twelve
 thirteen
 fourteen
 fifteen
+
