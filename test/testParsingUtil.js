@@ -18,4 +18,7 @@ describe("isOptionValid", () => {
   it("should throw error if option is wrong", () => {
     assert.throws(() => parseOption(["-g", "6", "filename"]), Error);
   });
+  it("should throw error if tailLength is wrong", () => {
+    assert.throws(() => parseOption(["-n", "6.7", "filename"]), Error);
+  });
 });
