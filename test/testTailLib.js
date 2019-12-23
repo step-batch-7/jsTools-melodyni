@@ -12,6 +12,15 @@ describe("parseUserArgs", () => {
     };
     assert.deepStrictEqual(parseUserArgs(userArgs), parsedArgs);
   });
+  it("should parse user arguments and take values that are specified", () => {
+    const userArgs = ["-n", "5", "filename"];
+    const parsedArgs = {
+      filePath: "filename",
+      option: "-n",
+      tailLength: 5
+    };
+    assert.deepStrictEqual(parseUserArgs(userArgs), parsedArgs);
+  });
 });
 
 describe("loadFile", () => {

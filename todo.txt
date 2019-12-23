@@ -31,15 +31,23 @@ Implementation:
  ✔ * write main
  ✔ * working appTests
 
+
 v0.2
 
 Goal : node tail.js -n 5 filename
 
 Implementation: 
-  * write appTests for this command
+ ✔ * write appTests for this command
+ ✔ * add appTest for command with wrong option
 
   --> parseUserArgs function 
-  * add test for parseUserArgs that can update tailLength
-  * modify parseUserArgs function
+ ✔ * add test for parseUserArgs that can update tailLength
+ ✔ * modify parseUserArgs function
   
-  --> 
+  --> parseOption 
+ ✔ * should give option & tailLength back if it is valid
+ ✔ * should give default option back if option is not specified
+ ✔ * should throw error if option is wrong
+
+  --> sendErrorMsg
+  * should send error message on error stream

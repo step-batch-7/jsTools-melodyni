@@ -1,12 +1,14 @@
 "use strict";
 
-const { getFileAction, isFilePresent, readFromFile } = require("./fileUtil");
+const { isFilePresent, readFromFile } = require("./fileUtil");
+const { parseOption } = require("./parsingUtil");
 
 const parseUserArgs = function(userArgs) {
+  const optionField = parseOption(userArgs);
   const parsedArgs = {
     filePath: userArgs.slice(-1)[0],
-    option: "-n",
-    tailLength: 10
+    option: optionField.option,
+    tailLength: optionField.tailLength
   };
   return parsedArgs;
 };
