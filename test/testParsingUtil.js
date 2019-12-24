@@ -15,10 +15,16 @@ describe("isOptionValid", () => {
       tailLength: 10
     });
   });
-  it("should throw error if option is wrong", () => {
+  it("should give option -r userOption is -r", () => {
+    assert.deepStrictEqual(parseOption(["-r", "filename"]), {
+      option: "-r",
+      tailLength: NaN
+    });
+  });
+  it("should throw error if option is not valid", () => {
     assert.throws(() => parseOption(["-g", "6", "filename"]), Error);
   });
-  it("should throw error if tailLength is wrong", () => {
+  it("should throw error if tailLength is not an integer", () => {
     assert.throws(() => parseOption(["-n", "6.7", "filename"]), Error);
   });
 });

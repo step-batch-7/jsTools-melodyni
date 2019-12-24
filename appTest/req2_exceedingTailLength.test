@@ -1,0 +1,7 @@
+(echo "one\ntwo\nthree\nfour\nfive" > foo; node tail.js -n 20 foo; rm foo)
+one
+two
+three
+four
+five
+

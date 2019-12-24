@@ -52,3 +52,24 @@ Implementation:
 
   --> sendErrorMsg
  ✔ * should send error message on error stream
+
+
+ v0.3
+
+ Goal : node tail.js -n 5 filename
+
+ Implementation:
+ ✔ * write appTest for this command
+
+  --> parseOption
+ ✔ * add test for option -r 
+ ✔ * modify parseOption
+
+  --> performTail
+ ✔ * place selectLastN in perform tail 
+ ✔ * place reverse function in performTail
+
+  --> reverseIt 
+ ✔ * should reverse the content of given file
+
+   * refactor parseOption function 

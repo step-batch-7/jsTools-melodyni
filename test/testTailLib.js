@@ -1,6 +1,12 @@
 "use strict";
 const assert = require("chai").assert;
-const { parseUserArgs, selectLastN, loadFile } = require("../src/tailLib");
+const {
+  parseUserArgs,
+  selectLastN,
+  performTail,
+  loadFile,
+  reverseIt
+} = require("../src/tailLib");
 
 describe("parseUserArgs", () => {
   it("should parse user arguments and take default values if fields are not specified", () => {
@@ -63,9 +69,87 @@ describe("loadFile", () => {
   });
 });
 
+describe("performTail", () => {
+  it("should give tail of given content (for default options)", () => {
+    const content =
+      "one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten\neleven\ntwelve";
+    const parsedArgs = {
+      filePath: "filename",
+      option: "-n",
+      tailLength: 10
+    };
+    const expected = [
+      "three",
+      "four",
+      "five",
+      "six",
+      "seven",
+      "eight",
+      "nine",
+      "ten",
+      "eleven",
+      "twelve"
+    ];
+    assert.deepStrictEqual(performTail(content, parsedArgs), expected);
+  });
+  it("should give whole content if tail length is equal to the content lines", () => {
+    const content = "one\ntwo\nthree\nfour\nfive\nsix\nseven";
+    const parsedArgs = {
+      filePath: "filename",
+      option: "-n",
+      tailLength: 7
+    };
+    const expected = ["one", "two", "three", "four", "five", "six", "seven"];
+    assert.deepStrictEqual(performTail(content, parsedArgs), expected);
+  });
+  it("should give whole content if tail length is greater than content lines", () => {
+    const content = "one\ntwo\nthree\nfour\nfive\nsix\nseven";
+    const parsedArgs = {
+      filePath: "filename",
+      option: "-n",
+      tailLength: 50
+    };
+    const expected = ["one", "two", "three", "four", "five", "six", "seven"];
+    assert.deepStrictEqual(performTail(content, parsedArgs), expected);
+  });
+  it("should give reverse content for option -r", () => {
+    const content = "one\ntwo\nthree\nfour\nfive";
+    const parsedArgs = {
+      filePath: "filename",
+      option: "-r",
+      tailLength: NaN
+    };
+    const expected = ["five", "four", "three", "two", "one"];
+    assert.deepStrictEqual(performTail(content, parsedArgs), expected);
+  });
+});
+describe("reverseIt", () => {
+  it("should reverse the elements of array", () => {
+    const content = ["one", "two", "three", "four", "five"];
+    const reversedContent = ["five", "four", "three", "two", "one"];
+    assert.deepStrictEqual(reverseIt(content), reversedContent);
+  });
+});
+
 describe("selectLastN", () => {
   it("should select last n elements of given array", () => {
-    const content = `one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten\neleven\ntwelve\nthirteen\nfourteen\nfifteen`;
+    const content = [
+      "one",
+      "two",
+      "three",
+      "four",
+      "five",
+      "six",
+      "seven",
+      "eight",
+      "nine",
+      "ten",
+      "eleven",
+      "twelve",
+      "thirteen",
+      "fourteen",
+      "fifteen"
+    ];
     const tail = [
       "six",
       "seven",
@@ -78,6 +162,7 @@ describe("selectLastN", () => {
       "fourteen",
       "fifteen"
     ];
+
     assert.deepStrictEqual(selectLastN(content, 10), tail);
   });
 });

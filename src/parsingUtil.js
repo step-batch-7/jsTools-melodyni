@@ -7,7 +7,7 @@ const isAnOption = function(symbol) {
 };
 
 const isValidOption = function(userOption) {
-  const validOptions = ["-n"];
+  const validOptions = ["-n", "-r"];
   return validOptions.includes(userOption);
 };
 
@@ -22,7 +22,7 @@ const parseOption = function(userArgs) {
     if (!isValidOption(userOption)) {
       sendErrorMsg(`tail: illegal option -- ${userOption}`);
     }
-    if (!isValidLength(userTailLength)) {
+    if (!(userOption === "-r") && !isValidLength(userTailLength)) {
       sendErrorMsg(`tail: illegal offset -- ${userTailLength}`);
     }
     return { option: userOption, tailLength: userTailLength };

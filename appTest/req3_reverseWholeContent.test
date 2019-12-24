@@ -1,0 +1,17 @@
+(echo "one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten\neleven\ntwelve\nthirteen\nfourteen\nfifteen" > foo; node tail.js -r foo; rm foo) 
+
+fifteen
+fourteen
+thirteen
+twelve
+eleven
+ten
+nine
+eight
+seven
+six
+five
+four
+three
+two
+one

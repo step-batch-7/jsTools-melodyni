@@ -21,9 +21,25 @@ const loadFile = function(fileAction) {
   sendErrorMsg(`tail: ${fileAction.path}: No such file or directory`);
 };
 
-const selectLastN = function(content, tailLength) {
-  const chunks = content.split("\n");
+const selectLastN = function(chunks, tailLength) {
   return chunks.slice(-tailLength);
 };
 
-module.exports = { parseUserArgs, selectLastN, loadFile };
+const reverseIt = function(content) {
+  return content.reverse();
+};
+
+const performTail = function(content, parsedArgs) {
+  const tasks = { "-n": selectLastN, "-r": reverseIt };
+  const chunks = content.split("\n");
+  const option = parsedArgs.option;
+  return tasks[option](chunks, parsedArgs.tailLength);
+};
+
+module.exports = {
+  parseUserArgs,
+  performTail,
+  selectLastN,
+  reverseIt,
+  loadFile
+};
