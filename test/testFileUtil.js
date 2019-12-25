@@ -1,21 +1,18 @@
 "use strict";
 const fs = require("fs");
 const assert = require("chai").assert;
-const {
-  getFileAction,
-  readFromFile,
-  isFilePresent
-} = require("../src/fileUtil");
+const { getFsTool, readFromFile, doesFileExist } = require("../src/fileUtil");
 
-describe("getFileAction", () => {
-  it("should give an object of filePath,encoding,reader,filePresent", () => {
+describe("getFsTool", () => {
+  it("should give an object of filePath,encoding,reader,existFile", () => {
     const expected = {
       path: "filePath",
       code: "utf8",
       reader: fs.readFileSync,
-      filePresent: fs.existsSync
+      existFile: fs.existsSync
     };
-    assert.deepStrictEqual(getFileAction("filePath"), expected);
+    const actual = getFsTool("filePath", fs.readFileSync, fs.existsSync);
+    assert.deepStrictEqual(actual, expected);
   });
 });
 
@@ -26,38 +23,38 @@ describe("readFromFile", () => {
       assert.strictEqual(code, "utf8");
       return "Got FileContent";
     };
-    const fileAction = {
+    const fsTool = {
       path: "path",
       code: "utf8",
       reader: readFile
     };
-    assert.strictEqual(readFromFile(fileAction), "Got FileContent");
+    assert.strictEqual(readFromFile(fsTool), "Got FileContent");
   });
 });
 
-describe("isFilePresent", () => {
+describe("doesFileExist", () => {
   it("should give true if file is present", () => {
     const existFile = function(path) {
       assert.strictEqual(path, "path");
       return true;
     };
-    const fileAction = {
+    const fsTool = {
       path: "path",
       code: "utf8",
-      filePresent: existFile
+      existFile: existFile
     };
-    assert.isTrue(isFilePresent(fileAction));
+    assert.isTrue(doesFileExist(fsTool));
   });
   it("should give false if file is not present", () => {
     const existFile = function(path) {
       assert.strictEqual(path, "path");
       return false;
     };
-    const fileAction = {
+    const fsTool = {
       path: "path",
       code: "utf8",
-      filePresent: existFile
+      existFile: existFile
     };
-    assert.isFalse(isFilePresent(fileAction));
+    assert.isFalse(doesFileExist(fsTool));
   });
 });

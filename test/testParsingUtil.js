@@ -2,7 +2,7 @@
 const assert = require("chai").assert;
 const { parseOption } = require("../src/parsingUtil");
 
-describe("isOptionValid", () => {
+describe("parseOption", () => {
   it("should give option back if it is valid", () => {
     assert.deepStrictEqual(parseOption(["-n", "4", "filename"]), {
       option: "-n",
@@ -21,10 +21,16 @@ describe("isOptionValid", () => {
       tailLength: NaN
     });
   });
-  it("should throw error if option is not valid", () => {
-    assert.throws(() => parseOption(["-g", "6", "filename"]), Error);
+
+  it("should give errorMsg for illegal option", () => {
+    const msg = `tail: illegal option -- -g\n`;
+    const usage = `usage: tail [-F | -f | -r] [-q] [-b # | -c # | -n #] [file ...]`;
+    const expected = { errorMsg: msg + usage };
+    assert.deepStrictEqual(parseOption(["-g", "4", "filename"]), expected);
   });
-  it("should throw error if tailLength is not an integer", () => {
-    assert.throws(() => parseOption(["-n", "6.7", "filename"]), Error);
+
+  it("should give errorMsg for non integral tailLength", () => {
+    const expected = { errorMsg: `tail: illegal offset -- 4.4` };
+    assert.deepStrictEqual(parseOption(["-n", "4.4", "filename"]), expected);
   });
 });

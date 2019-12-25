@@ -1,45 +1,35 @@
 "use strict";
 
-const { isFilePresent, readFromFile } = require("./fileUtil");
+const { getFsTool, doesFileExist, readFromFile } = require("./fileUtil");
 const { parseOption } = require("./parsingUtil");
-const { sendErrorMsg } = require("./errorHandling");
 
-const parseUserArgs = function(userArgs) {
-  const optionField = parseOption(userArgs);
-  const parsedArgs = {
-    filePath: userArgs.slice(-1)[0],
-    option: optionField.option,
-    tailLength: optionField.tailLength
-  };
-  return parsedArgs;
-};
-
-const loadFile = function(fileAction) {
-  if (isFilePresent(fileAction)) {
-    return readFromFile(fileAction);
-  }
-  sendErrorMsg(`tail: ${fileAction.path}: No such file or directory`);
-};
-
-const selectLastN = function(chunks, tailLength) {
-  return chunks.slice(-tailLength);
+const selectLastN = function(content, tailLength) {
+  return content.slice(-tailLength);
 };
 
 const reverseIt = function(content) {
   return content.reverse();
 };
 
-const performTail = function(content, parsedArgs) {
-  const tasks = { "-n": selectLastN, "-r": reverseIt };
-  const chunks = content.split("\n");
-  const option = parsedArgs.option;
-  return tasks[option](chunks, parsedArgs.tailLength);
+const performTail = function(readFile, fileExist, userArgs) {
+  const filename = userArgs.slice(-1)[0];
+  const fsTool = getFsTool(filename, readFile, fileExist);
+  const action = { "-n": selectLastN, "-r": reverseIt };
+  const parsedArgs = parseOption(userArgs);
+  if (parsedArgs.hasOwnProperty("errorMsg")) {
+    return { result: "", error: parsedArgs.errorMsg };
+  }
+  if (doesFileExist(fsTool)) {
+    const { option, tailLength } = parsedArgs;
+    const content = readFromFile(fsTool).split("\n");
+    const tail = action[option](content, tailLength).join("\n");
+    return { result: tail, error: "" };
+  }
+  return { result: "", error: `tail: ${filename}: No such file or directory` };
 };
 
 module.exports = {
-  parseUserArgs,
   performTail,
   selectLastN,
-  reverseIt,
-  loadFile
+  reverseIt
 };

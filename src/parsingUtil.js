@@ -1,7 +1,5 @@
 "use strict";
 
-const { sendErrorMsg } = require("../src/errorHandling");
-
 const isAnOption = function(symbol) {
   return symbol === "-";
 };
@@ -20,10 +18,14 @@ const parseOption = function(userArgs) {
   const userTailLength = +userArgs[1];
   if (isAnOption(userOption[0])) {
     if (!isValidOption(userOption)) {
-      sendErrorMsg(`tail: illegal option -- ${userOption}`);
+      const msg = `tail: illegal option -- ${userOption}\n`;
+      const usage = `usage: tail [-F | -f | -r] [-q] [-b # | -c # | -n #] [file ...]`;
+      return {
+        errorMsg: msg + usage
+      };
     }
     if (!(userOption === "-r") && !isValidLength(userTailLength)) {
-      sendErrorMsg(`tail: illegal offset -- ${userTailLength}`);
+      return { errorMsg: `tail: illegal offset -- ${userTailLength}` };
     }
     return { option: userOption, tailLength: userTailLength };
   }

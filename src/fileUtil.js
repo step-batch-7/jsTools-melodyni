@@ -1,22 +1,20 @@
 "use strict";
 
-const fs = require("fs");
-
-const getFileAction = function(path) {
+const getFsTool = function(path, readFile, fileExist) {
   return {
     path,
     code: "utf8",
-    reader: fs.readFileSync,
-    filePresent: fs.existsSync
+    reader: readFile,
+    existFile: fileExist
   };
 };
 
-const readFromFile = function(fileAction) {
-  return fileAction.reader(fileAction.path, fileAction.code);
+const readFromFile = function(fsTool) {
+  return fsTool.reader(fsTool.path, fsTool.code);
 };
 
-const isFilePresent = function(fileAction) {
-  return fileAction.filePresent(fileAction.path);
+const doesFileExist = function(fsTool) {
+  return fsTool.existFile(fsTool.path);
 };
 
-module.exports = { getFileAction, readFromFile, isFilePresent };
+module.exports = { getFsTool, readFromFile, doesFileExist };

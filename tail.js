@@ -1,19 +1,13 @@
 "use strict";
-
-const { parseUserArgs, performTail, loadFile } = require("./src/tailLib");
-const { getFileAction } = require("./src/fileUtil");
+const { stdout, stderr } = process;
+const { readFileSync, existsSync } = require("fs");
+const { performTail } = require("./src/tailLib");
 
 const main = function() {
-  try {
-    const parsedArgs = parseUserArgs(process.argv.slice(2));
-    const fileAction = getFileAction(parsedArgs.filePath);
-    const content = loadFile(fileAction);
-    const tail = performTail(content, parsedArgs);
-    //const tail = selectLastN(content, parsedArgs.tailLength);
-    console.log(tail.join("\n"));
-  } catch (error) {
-    console.error(error.message);
-  }
+  const userArgs = process.argv.slice(2);
+  const tail = performTail(readFileSync, existsSync, userArgs);
+  stdout.write(tail.result);
+  stderr.write(tail.error);
 };
 
 main();
