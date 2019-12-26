@@ -20,9 +20,7 @@ const parseOption = function(userArgs) {
     if (!isValidOption(userOption)) {
       const msg = `tail: illegal option -- ${userOption}\n`;
       const usage = `usage: tail [-F | -f | -r] [-q] [-b # | -c # | -n #] [file ...]`;
-      return {
-        errorMsg: msg + usage
-      };
+      return { errorMsg: msg + usage };
     }
     if (!(userOption === "-r") && !isValidLength(userTailLength)) {
       return { errorMsg: `tail: illegal offset -- ${userTailLength}` };

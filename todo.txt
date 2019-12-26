@@ -72,20 +72,4 @@ Implementation:
   --> reverseIt 
  ✔ * should reverse the content of given file
 
-   * refactor parseOption function 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
+   * refactor parseOption function
