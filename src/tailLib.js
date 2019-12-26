@@ -1,35 +1,36 @@
 "use strict";
 
-const { getFsTool, doesFileExist, readFromFile } = require("./fileUtil");
 const { parseOption } = require("./parsingUtil");
 
 const selectLastN = function(content, tailLength) {
   return content.slice(-tailLength);
 };
 
-const reverseIt = function(content) {
-  return content.reverse();
+const getIllegalFileMsg = function(filename) {
+  return `tail: ${filename}: No such file or directory`;
 };
 
-const performTail = function(readFile, fileExist, userArgs) {
+const reverse = content => content.reverse();
+
+const performTail = function(readFile, doesFileExist, userArgs) {
   const filename = userArgs.slice(-1)[0];
-  const fsTool = getFsTool(filename, readFile, fileExist);
-  const action = { "-n": selectLastN, "-r": reverseIt };
-  const parsedArgs = parseOption(userArgs);
-  if (parsedArgs.hasOwnProperty("errorMsg")) {
-    return { result: "", error: parsedArgs.errorMsg };
-  }
-  if (doesFileExist(fsTool)) {
-    const { option, tailLength } = parsedArgs;
-    const content = readFromFile(fsTool).split("\n");
-    const tail = action[option](content, tailLength).join("\n");
+  const actions = {
+    "-n": selectLastN,
+    "-r": reverse
+  };
+  const { option, tailLength, errorMsg } = parseOption(userArgs);
+  const action = actions[option];
+  if (!action) return { result: "", error: errorMsg };
+  if (doesFileExist(filename)) {
+    const content = readFile(filename, "utf8").split("\n");
+    const tail = action(content, tailLength).join("\n");
     return { result: tail, error: "" };
   }
-  return { result: "", error: `tail: ${filename}: No such file or directory` };
+  return { result: "", error: getIllegalFileMsg(filename) };
 };
 
 module.exports = {
   performTail,
   selectLastN,
-  reverseIt
+  reverseIt: reverse
 };

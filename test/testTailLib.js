@@ -8,7 +8,7 @@ describe("performTail", () => {
     const readFile = function(path, code) {
       assert.strictEqual(path, "filename");
       assert.strictEqual(code, "utf8");
-      return "aa\nbb\ncc\ndd\nee\nff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn";
+      return "aa\nbb\ncc\ndd\nee\nff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn\n";
     };
     const existFile = function(path) {
       assert.strictEqual(path, "filename");
@@ -16,7 +16,7 @@ describe("performTail", () => {
     };
     const actual = performTail(readFile, existFile, userArgs);
     const expected = {
-      result: "ee\nff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn",
+      result: "ff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn\n",
       error: ""
     };
     assert.deepStrictEqual(actual, expected);

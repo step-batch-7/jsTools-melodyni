@@ -15,6 +15,7 @@ describe("parseOption", () => {
       tailLength: 10
     });
   });
+
   it("should give option -r userOption is -r", () => {
     assert.deepStrictEqual(parseOption(["-r", "filename"]), {
       option: "-r",
