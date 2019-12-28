@@ -1,6 +1,6 @@
 "use strict";
 const assert = require("chai").assert;
-const { selectLastN, performTail, reverseIt } = require("../src/tailLib");
+const { selectLastN, performTail, validateArgs } = require("../src/tailLib");
 
 describe("performTail", () => {
   it("should give tail of given content (for default options)", () => {
@@ -117,24 +117,6 @@ describe("performTail", () => {
     assert.deepStrictEqual(actual, expected);
   });
 
-  it("should give reverse content for option -r", () => {
-    const userArgs = ["-r", "20", "filename"];
-    const readFile = function(path, code) {
-      assert.strictEqual(path, "filename");
-      assert.strictEqual(code, "utf8");
-      return "one\ntwo\nthree\nfour\nfive";
-    };
-    const existFile = function(path) {
-      assert.strictEqual(path, "filename");
-      return true;
-    };
-    const actual = performTail(readFile, existFile, userArgs);
-    const expected = {
-      result: "five\nfour\nthree\ntwo\none",
-      error: ""
-    };
-    assert.deepStrictEqual(actual, expected);
-  });
   it("should give object having error for invalid option", () => {
     const userArgs = ["-g", "4", "filename"];
     const readFile = function(path, code) {
@@ -157,11 +139,20 @@ describe("performTail", () => {
   });
 });
 
-describe("reverseIt", () => {
-  it("should reverse the elements of array", () => {
-    const content = ["one", "two", "three", "four", "five"];
-    const reversedContent = ["five", "four", "three", "two", "one"];
-    assert.deepStrictEqual(reverseIt(content), reversedContent);
+describe("validateArgs", () => {
+  it("should give illegal option error msg if option is wrong", () => {
+    const msg = `tail: illegal option -- -g\n`;
+    const usage = `usage: tail [-F | -f | -r] [-q] [-b # | -c # | -n #] [file ...]`;
+    const expected = { errorMsg: msg + usage };
+    assert.deepStrictEqual(validateArgs("-g", 10), expected);
+  });
+  it("should give illegal offset error msg if option is wrong", () => {
+    const msg = `tail: illegal offset -- 7.8`;
+    const expected = { errorMsg: msg };
+    assert.deepStrictEqual(validateArgs("-n", 7.8), expected);
+  });
+  it("should give empty object if there is no error", () => {
+    assert.deepStrictEqual(validateArgs("-n", 7), {});
   });
 });
 
@@ -196,7 +187,6 @@ describe("selectLastN", () => {
       "fourteen",
       "fifteen"
     ];
-
     assert.deepStrictEqual(selectLastN(content, 10), tail);
   });
 });

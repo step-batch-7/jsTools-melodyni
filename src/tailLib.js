@@ -1,36 +1,57 @@
 "use strict";
 
-const { parseOption } = require("./parsingUtil");
-
 const selectLastN = function(content, tailLength) {
   return content.slice(-tailLength);
+};
+
+const isValidLength = function(tailLength) {
+  return Number.isInteger(tailLength);
+};
+
+const getIllegalOptionMsg = function(option) {
+  const msg = `tail: illegal option -- ${option}\n`;
+  const usage = `usage: tail [-F | -f | -r] [-q] [-b # | -c # | -n #] [file ...]`;
+  return msg + usage;
+};
+
+const getIllegalOffsetMsg = function(offset) {
+  return `tail: illegal offset -- ${offset}`;
 };
 
 const getIllegalFileMsg = function(filename) {
   return `tail: ${filename}: No such file or directory`;
 };
 
-const reverse = content => content.reverse();
+const validateArgs = function(option, tailLength) {
+  if (!(option === "-n")) {
+    return { errorMsg: getIllegalOptionMsg(option) };
+  }
+  if (!isValidLength(tailLength)) {
+    return { errorMsg: getIllegalOffsetMsg(tailLength) };
+  }
+  return {};
+};
+
+const parseOption = function(userArgs) {
+  const args = userArgs;
+  const filename = args.pop();
+  return {
+    filename,
+    option: args[0] || "-n",
+    tailLength: +args[1] || 10
+  };
+};
 
 const performTail = function(readFile, doesFileExist, userArgs) {
-  const filename = userArgs.slice(-1)[0];
-  const actions = {
-    "-n": selectLastN,
-    "-r": reverse
-  };
-  const { option, tailLength, errorMsg } = parseOption(userArgs);
-  const action = actions[option];
-  if (!action) return { result: "", error: errorMsg };
-  if (doesFileExist(filename)) {
-    const content = readFile(filename, "utf8").split("\n");
-    const tail = action(content, tailLength).join("\n");
-    return { result: tail, error: "" };
+  const { filename, option, tailLength } = parseOption(userArgs);
+  const { errorMsg } = validateArgs(option, tailLength);
+  if (errorMsg) return { result: "", error: errorMsg };
+  if (!doesFileExist(filename)) {
+    return { result: "", error: getIllegalFileMsg(filename) };
   }
-  return { result: "", error: getIllegalFileMsg(filename) };
+  const content = readFile(filename, "utf8").split("\n");
+  const tail = selectLastN(content, tailLength).join("\n");
+  return { result: tail, error: "" };
 };
 
-module.exports = {
-  performTail,
-  selectLastN,
-  reverseIt: reverse
-};
+module.exports = { performTail, selectLastN, validateArgs };
