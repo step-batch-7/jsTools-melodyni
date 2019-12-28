@@ -40,36 +40,13 @@ Implementation:
  ✔ * write appTests for this command
  ✔ * add appTest for command with wrong option
 
-  --> parseUserArgs function 
- ✔ * add test for parseUserArgs that can update tailLength
- ✔ * modify parseUserArgs function
+  --> parseOption function 
+ ✔ * add test for parseOption that can update tailLength
+ ✔ * modify parseOption function
   
-  --> parseOption 
- ✔ * should give option & tailLength back if it is valid
- ✔ * should give default option back if option is not specified
- ✔ * should throw error if option is wrong
- ✔ * should throw error if count is not an integer
-
-  --> sendErrorMsg
- ✔ * should send error message on error stream
+  --> validateOption
+ ✔ * should give illegal option error for wrong option
+ ✔ * should give illegal offset error for wrong offset
 
 
- v0.3
-
- Goal : node tail.js -n 5 filename
-
- Implementation:
- ✔ * write appTest for this command
-
-  --> parseOption
- ✔ * add test for option -r 
- ✔ * modify parseOption
-
-  --> performTail
- ✔ * place selectLastN in perform tail 
- ✔ * place reverse function in performTail
-
-  --> reverseIt 
- ✔ * should reverse the content of given file
-
-   * refactor parseOption function
+ 

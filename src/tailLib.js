@@ -50,4 +50,4 @@ const performTail = function(readFile, doesFileExist, userArgs) {
   return { result: tail, error: "" };
 };
 
-module.exports = { performTail, validateArgs };
+module.exports = { performTail, validateArgs, parseOption };
