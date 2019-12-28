@@ -1,9 +1,5 @@
 "use strict";
 
-const selectLastN = function(content, tailLength) {
-  return content.slice(-tailLength);
-};
-
 const isValidLength = function(tailLength) {
   return Number.isInteger(tailLength);
 };
@@ -50,8 +46,8 @@ const performTail = function(readFile, doesFileExist, userArgs) {
     return { result: "", error: getIllegalFileMsg(filename) };
   }
   const content = readFile(filename, "utf8").split("\n");
-  const tail = selectLastN(content, tailLength).join("\n");
+  const tail = content.slice(-tailLength).join("\n");
   return { result: tail, error: "" };
 };
 
-module.exports = { performTail, selectLastN, validateArgs };
+module.exports = { performTail, validateArgs };

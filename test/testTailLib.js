@@ -1,6 +1,6 @@
 "use strict";
 const assert = require("chai").assert;
-const { selectLastN, performTail, validateArgs } = require("../src/tailLib");
+const { performTail, validateArgs } = require("../src/tailLib");
 
 describe("performTail", () => {
   it("should give tail of given content (for default options)", () => {
@@ -156,37 +156,37 @@ describe("validateArgs", () => {
   });
 });
 
-describe("selectLastN", () => {
-  it("should select last n elements of given array", () => {
-    const content = [
-      "one",
-      "two",
-      "three",
-      "four",
-      "five",
-      "six",
-      "seven",
-      "eight",
-      "nine",
-      "ten",
-      "eleven",
-      "twelve",
-      "thirteen",
-      "fourteen",
-      "fifteen"
-    ];
-    const tail = [
-      "six",
-      "seven",
-      "eight",
-      "nine",
-      "ten",
-      "eleven",
-      "twelve",
-      "thirteen",
-      "fourteen",
-      "fifteen"
-    ];
-    assert.deepStrictEqual(selectLastN(content, 10), tail);
-  });
-});
+// describe("selectLastN", () => {
+//   it("should select last n elements of given array", () => {
+//     const content = [
+//       "one",
+//       "two",
+//       "three",
+//       "four",
+//       "five",
+//       "six",
+//       "seven",
+//       "eight",
+//       "nine",
+//       "ten",
+//       "eleven",
+//       "twelve",
+//       "thirteen",
+//       "fourteen",
+//       "fifteen"
+//     ];
+//     const tail = [
+//       "six",
+//       "seven",
+//       "eight",
+//       "nine",
+//       "ten",
+//       "eleven",
+//       "twelve",
+//       "thirteen",
+//       "fourteen",
+//       "fifteen"
+//     ];
+//     assert.deepStrictEqual(selectLastN(content, 10), tail);
+//   });
+// });
