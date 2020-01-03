@@ -48,5 +48,6 @@ Implementation:
  ✔ * should give illegal option error for wrong option
  ✔ * should give illegal offset error for wrong offset
 
+  * refactor parseOption & performTail
 
  

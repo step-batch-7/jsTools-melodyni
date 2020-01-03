@@ -1,53 +1,71 @@
-"use strict";
-
-const isValidLength = function(tailLength) {
-  return Number.isInteger(tailLength);
-};
-
-const getIllegalOptionMsg = function(option) {
-  const msg = `tail: illegal option -- ${option}\n`;
-  const usage = `usage: tail [-F | -f | -r] [-q] [-b # | -c # | -n #] [file ...]`;
-  return msg + usage;
-};
-
-const getIllegalOffsetMsg = function(offset) {
-  return `tail: illegal offset -- ${offset}`;
-};
-
-const getIllegalFileMsg = function(filename) {
-  return `tail: ${filename}: No such file or directory`;
-};
-
-const validateArgs = function(option, tailLength) {
-  if (!(option === "-n")) {
-    return { errorMsg: getIllegalOptionMsg(option) };
+const selectBottomN = function (readFile, doesFileExist, parsedOptions) {
+  const {lineLength, files} = parsedOptions;
+  if (!doesFileExist(files[0])) {
+    return {
+      result: '',
+      error: `tail: ${files[0]}: No such file or directory`
+    };
   }
-  if (!isValidLength(tailLength)) {
-    return { errorMsg: getIllegalOffsetMsg(tailLength) };
+  const content = readFile(files[0], 'utf8').split('\n');
+  return {result: content.slice(-lineLength).join('\n'), error: ''};
+};
+
+const updateLineLength = function (parsedArg, arg) {
+  parsedArg[parsedArg.previousArg] = +arg;
+  parsedArg.previousArg = undefined;
+  return parsedArg;
+};
+
+const updateOption = function (parsedArg, arg) {
+  const optionNames = {'-n': 'lineLength'};
+  parsedArg.option = arg;
+  parsedArg.previousArg = optionNames[arg];
+  return parsedArg;
+};
+
+const parser = function (parsedArg, arg) {
+  if (parsedArg.previousArg) {
+    return updateLineLength(parsedArg, arg);
   }
-  return {};
-};
-
-const parseOption = function(userArgs) {
-  const args = userArgs;
-  const filename = args.pop();
-  return {
-    filename,
-    option: args[0] || "-n",
-    tailLength: +args[1] || 10
-  };
-};
-
-const performTail = function(readFile, doesFileExist, userArgs) {
-  const { filename, option, tailLength } = parseOption(userArgs);
-  const { errorMsg } = validateArgs(option, tailLength);
-  if (errorMsg) return { result: "", error: errorMsg };
-  if (!doesFileExist(filename)) {
-    return { result: "", error: getIllegalFileMsg(filename) };
+  if (arg.startsWith('-')) {
+    return updateOption(parsedArg, arg);
   }
-  const content = readFile(filename, "utf8").split("\n");
-  const tail = content.slice(-tailLength).join("\n");
-  return { result: tail, error: "" };
+  parsedArg.files.push(arg);
+  return parsedArg;
 };
 
-module.exports = { performTail, validateArgs, parseOption };
+const isOptionValid = function (userOption) {
+  const validOptions = ['-n'];
+  return validOptions.some((option) => option === userOption);
+};
+
+const isOffsetValid = function (offset) {
+  return Number.isInteger(offset);
+};
+
+const validateParsedArgs = function (parsedArgs) {
+  const {option, lineLength} = parsedArgs;
+  let errorMsg;
+  if (!isOffsetValid(lineLength)) {
+    errorMsg = `tail: illegal offset -- ${lineLength}`;
+  }
+  if (!isOptionValid(option)) {
+    const msg = `tail: illegal option -- ${option}\n`;
+    const usage =
+      'usage: tail [-F | -f | -r] [-q] [-b # | -c # | -n #] [file ...]';
+    errorMsg = msg + usage;
+  }
+  return {error: errorMsg};
+};
+
+const performTail = function (readFile, doesFileExist, userArgs) {
+  const parsedFields = {option: '-n', lineLength: 10, files: []};
+  const parsedOptions = userArgs.reduce(parser, parsedFields);
+  const validatedArgs = validateParsedArgs(parsedOptions);
+  if (validatedArgs.error) {
+    return {result: '', error: validatedArgs.error};
+  }
+  return selectBottomN(readFile, doesFileExist, parsedOptions);
+};
+
+module.exports = {performTail, parser, validateParsedArgs, selectBottomN};

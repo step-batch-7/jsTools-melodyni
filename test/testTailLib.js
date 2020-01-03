@@ -1,168 +1,230 @@
-"use strict";
-const assert = require("chai").assert;
-const { performTail, validateArgs, parseOption } = require("../src/tailLib");
+'use strict';
+const assert = require('chai').assert;
+const sinon = require('sinon');
+const {
+  performTail,
+  parser,
+  validateParsedArgs,
+  selectBottomN
+} = require('../src/tailLib');
 
-describe("performTail", () => {
-  it("should give tail of given content (for default options)", () => {
-    const userArgs = ["filename"];
-    const readFile = function(path, code) {
-      assert.strictEqual(path, "filename");
-      assert.strictEqual(code, "utf8");
-      return "aa\nbb\ncc\ndd\nee\nff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn\n";
+describe('selectBottomN', () => {
+  it('should select bottom N lines of given file if file is present', () => {
+    const readFile = function (path, code) {
+      assert.strictEqual(path, 'one.txt');
+      assert.strictEqual(code, 'utf8');
+      return 'aa\nbb\ncc\ndd\nee\nff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn';
     };
-    const existFile = function(path) {
-      assert.strictEqual(path, "filename");
+    const doesFileExists = function (path) {
+      assert.strictEqual(path, 'one.txt');
       return true;
     };
-    const actual = performTail(readFile, existFile, userArgs);
+    const parsedArgs = {option: '-n', lineLength: 6, files: ['one.txt']};
+    const actual = selectBottomN(readFile, doesFileExists, parsedArgs);
+    const expected = {result: 'ii\njj\nkk\nll\nmm\nnn', error: ''};
+    assert.deepStrictEqual(actual, expected);
+  });
+  it('should five error if given file is not present', () => {
+    const readFile = function (path, code) {
+      assert.strictEqual(path, 'one.txt');
+      assert.strictEqual(code, 'utf8');
+      return '';
+    };
+    const doesFileExists = function (path) {
+      assert.strictEqual(path, 'one.txt');
+      return false;
+    };
+    const parsedArgs = {option: '-n', lineLength: 6, files: ['one.txt']};
+    const actual = selectBottomN(readFile, doesFileExists, parsedArgs);
+    const expected = {result: '', error: 'tail: one.txt: No such file or directory'};
+    assert.deepStrictEqual(actual, expected);
+  });
+
+});
+
+describe('parser', () => {
+  it('should parse args as option, lineLength and files if present ', () => {
+    const args = ['-n', '3', 'one.txt'];
+    const context = {option: '-n', lineLength: 10, files: []};
+    const actual = args.reduce(parser, context);
     const expected = {
-      result: "ff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn\n",
-      error: ""
+      option: '-n',
+      lineLength: 3,
+      files: ['one.txt'],
+      previousArg: undefined
     };
     assert.deepStrictEqual(actual, expected);
   });
 
-  it("should give object having error for file that doesn't exist", () => {
-    const userArgs = ["filename"];
-    const readFile = function(path, code) {
-      assert.strictEqual(path, "filename");
-      assert.strictEqual(code, "utf8");
-      return "aa\nbb\ncc\ndd\nee\nff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn";
+  it('should parse args as default values if option are not present', () => {
+    const args = ['a.txt', 'b.txt'];
+    const context = {option: '-n', lineLength: 10, files: []};
+    const actual = args.reduce(parser, context);
+    const expected = {option: '-n', lineLength: 10, files: ['a.txt', 'b.txt']};
+    assert.deepStrictEqual(actual, expected);
+  });
+
+  it('should parse args if nothing is given as arguments', () => {
+    const args = [];
+    const context = {option: '-n', lineLength: 10, files: []};
+    const actual = args.reduce(parser, context);
+    const expected = {option: '-n', lineLength: 10, files: []};
+    assert.deepStrictEqual(actual, expected);
+  });
+
+});
+
+describe('validateParsedArgs', () => {
+  it('should not give error if option and lineLength are valid', () => {
+    const parsedArgs = {option: '-n', lineLength: 10, files: ['a.txt']};
+    const actual = validateParsedArgs(parsedArgs);
+    assert.deepStrictEqual(actual, {error: undefined});
+  });
+  it('should give illegalOptionError if option is not valid', () => {
+    const parsedArgs = {option: '-g', lineLength: 10, files: ['a.txt']};
+    const actual = validateParsedArgs(parsedArgs);
+    const msg = 'tail: illegal option -- -g\n';
+    const usage =
+      'usage: tail [-F | -f | -r] [-q] [-b # | -c # | -n #] [file ...]';
+    const expected = {error: msg + usage};
+    assert.deepStrictEqual(actual, expected);
+  });
+  it('should give illegalOffsetError if offset is not valid', () => {
+    const parsedArgs = {option: '-n', lineLength: 7.7, files: ['a.txt']};
+    const actual = validateParsedArgs(parsedArgs);
+    const expected = {error: 'tail: illegal offset -- 7.7'};
+    assert.deepStrictEqual(actual, expected);
+  });
+});
+
+describe('performTail', () => {
+  it('should give tail of given content (for default options)', () => {
+    const userArgs = ['filename'];
+    const readFile = function (path, code) {
+      assert.strictEqual(path, 'filename');
+      assert.strictEqual(code, 'utf8');
+      return 'aa\nbb\ncc\ndd\nee\nff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn\n';
     };
-    const existFile = function(path) {
-      assert.strictEqual(path, "filename");
+    const existFile = function (path) {
+      assert.strictEqual(path, 'filename');
+      return true;
+    };
+    const actual = performTail(readFile, existFile, userArgs);
+    const expected = {
+      result: 'ff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn\n',
+      error: ''
+    };
+    assert.deepStrictEqual(actual, expected);
+  });
+  it('should give object having error for file that doesn\'t exist', () => {
+    const userArgs = ['filename'];
+    const readFile = function (path, code) {
+      assert.strictEqual(path, 'filename');
+      assert.strictEqual(code, 'utf8');
+      return 'aa\nbb\ncc\ndd\nee\nff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn';
+    };
+    const existFile = function (path) {
+      assert.strictEqual(path, 'filename');
       return false;
     };
     const actual = performTail(readFile, existFile, userArgs);
     const expected = {
-      result: "",
-      error: `tail: filename: No such file or directory`
+      result: '',
+      error: 'tail: filename: No such file or directory'
     };
     assert.deepStrictEqual(actual, expected);
   });
-
-  it("should give tail of given length", () => {
-    const userArgs = ["-n", "3", "filename"];
-    const readFile = function(path, code) {
-      assert.strictEqual(path, "filename");
-      assert.strictEqual(code, "utf8");
-      return "aa\nbb\ncc\ndd\nee\nff";
+  it('should give tail of given length', () => {
+    const userArgs = ['-n', '3', 'filename'];
+    const readFile = function (path, code) {
+      assert.strictEqual(path, 'filename');
+      assert.strictEqual(code, 'utf8');
+      return 'aa\nbb\ncc\ndd\nee\nff';
     };
-    const existFile = function(path) {
-      assert.strictEqual(path, "filename");
+    const existFile = function (path) {
+      assert.strictEqual(path, 'filename');
       return true;
     };
     const actual = performTail(readFile, existFile, userArgs);
     const expected = {
-      result: "dd\nee\nff",
-      error: ""
+      result: 'dd\nee\nff',
+      error: ''
     };
     assert.deepStrictEqual(actual, expected);
   });
-
-  it("should give object having error for invalid offset", () => {
-    const userArgs = ["-n", "4.67", "filename"];
-    const readFile = function(path, code) {
-      assert.strictEqual(path, "filename");
-      assert.strictEqual(code, "utf8");
-      return "aa\nbb\ncc\ndd\nee\nff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn";
+  it('should give object having error for invalid offset', () => {
+    const userArgs = ['-n', '4.67', 'filename'];
+    const readFile = function (path, code) {
+      assert.strictEqual(path, 'filename');
+      assert.strictEqual(code, 'utf8');
+      return 'aa\nbb\ncc\ndd\nee\nff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn';
     };
-    const existFile = function(path) {
-      assert.strictEqual(path, "filename");
+    const existFile = function (path) {
+      assert.strictEqual(path, 'filename');
       return true;
     };
     const actual = performTail(readFile, existFile, userArgs);
     const expected = {
-      result: "",
-      error: `tail: illegal offset -- 4.67`
+      result: '',
+      error: 'tail: illegal offset -- 4.67'
     };
     assert.deepStrictEqual(actual, expected);
   });
-
-  it("should give whole content if tail length is equal to the content lines", () => {
-    const userArgs = ["-n", "6", "filename"];
-    const readFile = function(path, code) {
-      assert.strictEqual(path, "filename");
-      assert.strictEqual(code, "utf8");
-      return "aa\nbb\ncc\ndd\nee\nff";
+  it('should give whole content if tailLength & content are equal', () => {
+    const userArgs = ['-n', '6', 'filename'];
+    const readFile = function (path, code) {
+      assert.strictEqual(path, 'filename');
+      assert.strictEqual(code, 'utf8');
+      return 'aa\nbb\ncc\ndd\nee\nff';
     };
-    const existFile = function(path) {
-      assert.strictEqual(path, "filename");
+    const existFile = function (path) {
+      assert.strictEqual(path, 'filename');
       return true;
     };
     const actual = performTail(readFile, existFile, userArgs);
     const expected = {
-      result: "aa\nbb\ncc\ndd\nee\nff",
-      error: ""
+      result: 'aa\nbb\ncc\ndd\nee\nff',
+      error: ''
     };
     assert.deepStrictEqual(actual, expected);
   });
-
-  it("should give whole content if tail length is greater than content lines", () => {
-    const userArgs = ["-n", "20", "filename"];
-    const readFile = function(path, code) {
-      assert.strictEqual(path, "filename");
-      assert.strictEqual(code, "utf8");
-      return "aa\nbb\ncc\ndd\nee\nff";
+  it('should give whole content if tailLength is more than content', () => {
+    const userArgs = ['-n', '20', 'filename'];
+    const readFile = function (path, code) {
+      assert.strictEqual(path, 'filename');
+      assert.strictEqual(code, 'utf8');
+      return 'aa\nbb\ncc\ndd\nee\nff';
     };
-    const existFile = function(path) {
-      assert.strictEqual(path, "filename");
+    const existFile = function (path) {
+      assert.strictEqual(path, 'filename');
       return true;
     };
     const actual = performTail(readFile, existFile, userArgs);
     const expected = {
-      result: "aa\nbb\ncc\ndd\nee\nff",
-      error: ""
+      result: 'aa\nbb\ncc\ndd\nee\nff',
+      error: ''
     };
     assert.deepStrictEqual(actual, expected);
   });
-
-  it("should give object having error for invalid option", () => {
-    const userArgs = ["-g", "4", "filename"];
-    const readFile = function(path, code) {
-      assert.strictEqual(path, "filename");
-      assert.strictEqual(code, "utf8");
-      return "aa\nbb\ncc\ndd\nee\nff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn";
+  it('should give object having error for invalid option', () => {
+    const userArgs = ['-g', '4', 'filename'];
+    const readFile = function (path, code) {
+      assert.strictEqual(path, 'filename');
+      assert.strictEqual(code, 'utf8');
+      return 'aa\nbb\ncc\ndd\nee\nff\ngg\nhh\nii\njj\nkk\nll\nmm\nnn';
     };
-    const existFile = function(path) {
-      assert.strictEqual(path, "filename");
+    const existFile = function (path) {
+      assert.strictEqual(path, 'filename');
       return true;
     };
     const actual = performTail(readFile, existFile, userArgs);
-    const msg = `tail: illegal option -- -g\n`;
-    const usage = `usage: tail [-F | -f | -r] [-q] [-b # | -c # | -n #] [file ...]`;
+    const msg = 'tail: illegal option -- -g\n';
+    const usage =
+      'usage: tail [-F | -f | -r] [-q] [-b # | -c # | -n #] [file ...]';
     const expected = {
-      result: "",
+      result: '',
       error: msg + usage
     };
     assert.deepStrictEqual(actual, expected);
-  });
-});
-
-describe("validateArgs", () => {
-  it("should give illegal option error msg if option is wrong", () => {
-    const msg = `tail: illegal option -- -g\n`;
-    const usage = `usage: tail [-F | -f | -r] [-q] [-b # | -c # | -n #] [file ...]`;
-    const expected = { errorMsg: msg + usage };
-    assert.deepStrictEqual(validateArgs("-g", 10), expected);
-  });
-  it("should give illegal offset error msg if option is wrong", () => {
-    const msg = `tail: illegal offset -- 7.8`;
-    const expected = { errorMsg: msg };
-    assert.deepStrictEqual(validateArgs("-n", 7.8), expected);
-  });
-  it("should give empty object if there is no error", () => {
-    assert.deepStrictEqual(validateArgs("-n", 7), {});
-  });
-});
-
-describe("parseOption", () => {
-  it("should give default option and tailLength if not specified", () => {
-    const expected = { filename: "filePath", option: "-n", tailLength: 10 };
-    assert.deepStrictEqual(parseOption(["filePath"]), expected);
-  });
-  it("should give specified option and tailLength", () => {
-    const expected = { filename: "filePath", option: "-n", tailLength: 5 };
-    assert.deepStrictEqual(parseOption(["-n", "5", "filePath"]), expected);
   });
 });
